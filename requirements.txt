@@ -1,7 +1,9 @@
 streamlit
-openai
 faiss-cpu
 pdfplumber
 tiktoken
 python-dotenv
 numpy
+PyPDF2
+sentence-transformers
+groq

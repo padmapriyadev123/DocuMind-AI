@@ -177,42 +177,64 @@ div[style*="linear-gradient"] {
    MOBILE RESPONSIVE STYLES
    ════════════════════════════════════════ */
 
-/* Tablets and below (≤ 768px) */
 @media (max-width: 768px) {
 
-    /* Reduce main content padding */
-    .block-container {
-        padding: 1rem 0.75rem !important;
+    /* KEY FIX: sidebar becomes a floating overlay on mobile,
+       so it never shrinks the main content area */
+    [data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100dvh !important;
+        z-index: 9999 !important;
+        min-width: 82vw !important;
+        max-width: 82vw !important;
+        box-shadow: 6px 0 24px rgba(0,0,0,0.6) !important;
+        overflow-y: auto !important;
+        transition: transform 0.25s ease !important;
     }
 
-    /* Sidebar: make it a full-width drawer on mobile */
-    [data-testid="stSidebar"] {
-        min-width: 85vw !important;
-        max-width: 85vw !important;
-    }
     [data-testid="stSidebar"] > div:first-child {
         padding: 1rem !important;
+        min-width: 82vw !important;
+        width: 82vw !important;
     }
 
-    /* Page title smaller on mobile */
-    h1 {
-        font-size: 1.4rem !important;
+    /* Main content always full width on mobile */
+    .main {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
     }
 
-    /* Chat bubbles: limit max-width so they don't overflow */
-    .stMarkdown div[style*="max-width:72%"],
-    .stMarkdown div[style*="max-width:78%"] {
-        max-width: 95% !important;
-        font-size: 13px !important;
-    }
-
-    /* Ask input + button stack vertically */
-    [data-testid="column"]:has(input) {
+    .main .block-container {
+        padding: 1rem 0.75rem !important;
+        max-width: 100% !important;
         width: 100% !important;
-        flex: 1 1 100% !important;
     }
 
-    /* Make buttons full width and easier to tap */
+    /* Hide the sidebar collapse arrow - use hamburger instead */
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        z-index: 10000 !important;
+    }
+
+    h1 { font-size: 1.3rem !important; }
+
+    /* Chat bubbles */
+    div[style*="max-width:72%"] {
+        max-width: 90% !important;
+        font-size: 13px !important;
+        word-break: break-word !important;
+    }
+    div[style*="max-width:78%"] {
+        max-width: 94% !important;
+        font-size: 13px !important;
+        word-break: break-word !important;
+    }
+
+    /* All buttons full width */
     .stButton > button {
         width: 100% !important;
         font-size: 14px !important;
@@ -220,85 +242,45 @@ div[style*="linear-gradient"] {
         min-height: 48px !important;
     }
 
-    /* Quick action buttons: 2-column grid on mobile */
-    [data-testid="stSidebar"] .stButton > button {
-        font-size: 12px !important;
-        padding: 10px 8px !important;
-        min-height: 44px !important;
-    }
-
-    /* File uploader touch-friendly */
-    [data-testid="stFileUploader"] {
-        padding: 16px !important;
-    }
-
-    /* Login page: remove excess top margin */
-    .stApp .block-container > div > div > div:first-child {
-        margin-top: 0 !important;
-    }
-
-    /* Progress bar text size */
-    .stProgress {
-        font-size: 13px !important;
-    }
-}
-
-/* Small phones (≤ 480px) */
-@media (max-width: 480px) {
-
-    .block-container {
-        padding: 0.75rem 0.5rem !important;
-    }
-
-    h1 {
-        font-size: 1.2rem !important;
-    }
-
-    /* Input full width */
-    .stTextInput > div > div > input {
-        font-size: 16px !important;   /* prevents iOS zoom */
-        padding: 10px 14px !important;
-        border-radius: 10px !important;
-    }
-
-    /* Stat boxes: stack vertically */
+    /* Stat boxes stack vertically on mobile */
     div[style*="display:flex; gap:12px"] {
         flex-direction: column !important;
         gap: 8px !important;
     }
 
-    /* Source tags wrap properly */
+    /* Prevent iOS zoom on input focus */
+    .stTextInput > div > div > input {
+        font-size: 16px !important;
+    }
+
+    [data-testid="stFileUploader"] {
+        padding: 12px !important;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .main .block-container {
+        padding: 0.5rem 0.4rem !important;
+    }
+    h1 { font-size: 1.1rem !important; }
+
     span[style*="border-radius:20px"] {
         font-size: 10px !important;
         padding: 2px 8px !important;
     }
-
-    /* Sidebar full width on tiny screens */
-    [data-testid="stSidebar"] {
-        min-width: 92vw !important;
-        max-width: 92vw !important;
-    }
-
-    /* Branding text smaller */
-    [data-testid="stSidebar"] div[style*="font-size:1.2rem"] {
-        font-size: 1rem !important;
-    }
 }
 
-/* ── Touch device improvements ── */
+/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
-    /* Remove hover transform effects that feel wrong on touch */
     [data-testid="stSidebar"] .stButton > button:hover {
         transform: none !important;
     }
-
-    /* Larger tap areas for all interactive elements */
     .stButton > button {
         min-height: 48px !important;
     }
-
     select, input, textarea {
-        font-size: 16px !important;  /* prevents iOS zoom on focus */
+        font-size: 16px !important;
     }
 }
 

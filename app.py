@@ -11,6 +11,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Inject mobile viewport meta tag
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+""", unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -30,12 +35,12 @@ html, body, [class*="css"] {
 footer { visibility: hidden; }
 header { visibility: hidden; }
 
-/* 🔥 FIX TEXT VISIBILITY */
+/* FIX TEXT VISIBILITY */
 .stApp, .stApp * {
     color: #ffffff !important;
 }
 
-/* 🔥 INPUT FIX */
+/* INPUT FIX */
 .stTextInput > div > div > input {
     background-color: #1e1e2f !important;
     color: #ffffff !important;
@@ -44,6 +49,8 @@ header { visibility: hidden; }
     padding: 12px 16px !important;
     font-size: 15px !important;
     caret-color: #ffffff !important;
+    /* Mobile: prevent zoom on focus (iOS requires font-size >= 16px) */
+    font-size: 16px !important;
 }
 .stTextInput input::placeholder {
     color: #aaaaaa !important;
@@ -53,6 +60,9 @@ header { visibility: hidden; }
 .stButton > button {
     background: linear-gradient(135deg, #667eea, #764ba2) !important;
     color: white !important;
+    /* Touch-friendly tap target */
+    min-height: 44px !important;
+    border-radius: 10px !important;
 }
 
 /* Sidebar */
@@ -60,33 +70,25 @@ header { visibility: hidden; }
     background: rgba(15, 12, 41, 0.95) !important;
 }
 
-/* 🔥 FINAL FIX - FILE UPLOADER TEXT VISIBILITY */
+/* FILE UPLOADER TEXT VISIBILITY */
 [data-testid="stFileUploader"] {
     background: #1e1e2f !important;
     border: 2px dashed #667eea !important;
     border-radius: 12px !important;
     padding: 10px !important;
 }
-
-/* File name (MAIN FIX) */
 [data-testid="stFileUploader"] div {
     color: #000000 !important;
     font-weight: 600 !important;
 }
-
-/* File size / small text */
 [data-testid="stFileUploader"] small {
     color: #000000 !important;
     opacity: 1 !important;
 }
-
-/* Uploaded file container */
 [data-testid="stFileUploader"] section {
     background: #ffffff !important;
     color: #000000 !important;
 }
-
-/* File buttons */
 [data-testid="stFileUploader"] button {
     color: #ffffff !important;
     background: rgba(102,126,234,0.2) !important;
@@ -98,8 +100,6 @@ div[style*="background:rgba(255,255,255,0.07)"] {
     background: #2a2a40 !important;
     color: #ffffff !important;
 }
-
-/* User bubble */
 div[style*="linear-gradient"] {
     color: #ffffff !important;
 }
@@ -129,12 +129,13 @@ div[style*="linear-gradient"] {
     border: 1px solid rgba(102,126,234,0.4) !important;
     color: #a3bffa !important;
     border-radius: 8px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: 500 !important;
-    padding: 6px 10px !important;
+    padding: 10px 12px !important;
     margin-bottom: 4px !important;
     text-align: left !important;
     transition: all 0.2s ease !important;
+    min-height: 44px !important;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
     background: rgba(102,126,234,0.35) !important;
@@ -143,12 +144,13 @@ div[style*="linear-gradient"] {
     transform: translateX(3px) !important;
 }
 
-/* Padding */
+/* ── DESKTOP padding ── */
 .block-container {
     padding: 2rem !important;
+    max-width: 100% !important;
 }
 
-/* 🔥 SELECTBOX FIX - Make selected language text visible */
+/* SELECTBOX FIX */
 [data-testid="stSidebar"] [data-baseweb="select"] > div {
     background-color: #ffffff !important;
     border: 1px solid #667eea !important;
@@ -158,7 +160,6 @@ div[style*="linear-gradient"] {
 [data-testid="stSidebar"] [data-baseweb="select"] div {
     color: #000000 !important;
 }
-/* Dropdown options list */
 [data-baseweb="popover"] li,
 [data-baseweb="menu"] li,
 [data-baseweb="popover"] [role="option"],
@@ -170,6 +171,135 @@ div[style*="linear-gradient"] {
 [data-baseweb="menu"] [role="option"]:hover {
     background-color: #e8e8f0 !important;
     color: #000000 !important;
+}
+
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVE STYLES
+   ════════════════════════════════════════ */
+
+/* Tablets and below (≤ 768px) */
+@media (max-width: 768px) {
+
+    /* Reduce main content padding */
+    .block-container {
+        padding: 1rem 0.75rem !important;
+    }
+
+    /* Sidebar: make it a full-width drawer on mobile */
+    [data-testid="stSidebar"] {
+        min-width: 85vw !important;
+        max-width: 85vw !important;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        padding: 1rem !important;
+    }
+
+    /* Page title smaller on mobile */
+    h1 {
+        font-size: 1.4rem !important;
+    }
+
+    /* Chat bubbles: limit max-width so they don't overflow */
+    .stMarkdown div[style*="max-width:72%"],
+    .stMarkdown div[style*="max-width:78%"] {
+        max-width: 95% !important;
+        font-size: 13px !important;
+    }
+
+    /* Ask input + button stack vertically */
+    [data-testid="column"]:has(input) {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    /* Make buttons full width and easier to tap */
+    .stButton > button {
+        width: 100% !important;
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        min-height: 48px !important;
+    }
+
+    /* Quick action buttons: 2-column grid on mobile */
+    [data-testid="stSidebar"] .stButton > button {
+        font-size: 12px !important;
+        padding: 10px 8px !important;
+        min-height: 44px !important;
+    }
+
+    /* File uploader touch-friendly */
+    [data-testid="stFileUploader"] {
+        padding: 16px !important;
+    }
+
+    /* Login page: remove excess top margin */
+    .stApp .block-container > div > div > div:first-child {
+        margin-top: 0 !important;
+    }
+
+    /* Progress bar text size */
+    .stProgress {
+        font-size: 13px !important;
+    }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+
+    .block-container {
+        padding: 0.75rem 0.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Input full width */
+    .stTextInput > div > div > input {
+        font-size: 16px !important;   /* prevents iOS zoom */
+        padding: 10px 14px !important;
+        border-radius: 10px !important;
+    }
+
+    /* Stat boxes: stack vertically */
+    div[style*="display:flex; gap:12px"] {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    /* Source tags wrap properly */
+    span[style*="border-radius:20px"] {
+        font-size: 10px !important;
+        padding: 2px 8px !important;
+    }
+
+    /* Sidebar full width on tiny screens */
+    [data-testid="stSidebar"] {
+        min-width: 92vw !important;
+        max-width: 92vw !important;
+    }
+
+    /* Branding text smaller */
+    [data-testid="stSidebar"] div[style*="font-size:1.2rem"] {
+        font-size: 1rem !important;
+    }
+}
+
+/* ── Touch device improvements ── */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover transform effects that feel wrong on touch */
+    [data-testid="stSidebar"] .stButton > button:hover {
+        transform: none !important;
+    }
+
+    /* Larger tap areas for all interactive elements */
+    .stButton > button {
+        min-height: 48px !important;
+    }
+
+    select, input, textarea {
+        font-size: 16px !important;  /* prevents iOS zoom on focus */
+    }
 }
 
 </style>

@@ -179,8 +179,7 @@ div[style*="linear-gradient"] {
 
 @media (max-width: 768px) {
 
-    /* KEY FIX: sidebar becomes a floating overlay on mobile,
-       so it never shrinks the main content area */
+    /* CORE FIX: sidebar is an overlay, never affects layout */
     [data-testid="stSidebar"] {
         position: fixed !important;
         top: 0 !important;
@@ -189,40 +188,39 @@ div[style*="linear-gradient"] {
         z-index: 9999 !important;
         min-width: 82vw !important;
         max-width: 82vw !important;
-        box-shadow: 6px 0 24px rgba(0,0,0,0.6) !important;
+        box-shadow: 6px 0 24px rgba(0,0,0,0.7) !important;
         overflow-y: auto !important;
-        transition: transform 0.25s ease !important;
     }
 
     [data-testid="stSidebar"] > div:first-child {
         padding: 1rem !important;
-        min-width: 82vw !important;
         width: 82vw !important;
+        min-width: 82vw !important;
     }
 
-    /* Main content always full width on mobile */
-    .main {
+    /* Main content: full width always */
+    section.main {
         margin-left: 0 !important;
         padding-left: 0 !important;
         width: 100vw !important;
         max-width: 100vw !important;
+        flex: 1 !important;
     }
 
     .main .block-container {
         padding: 1rem 0.75rem !important;
         max-width: 100% !important;
         width: 100% !important;
+        margin-left: 0 !important;
     }
 
-    /* Hide the sidebar collapse arrow - use hamburger instead */
-    [data-testid="collapsedControl"] {
-        display: block !important;
-        z-index: 10000 !important;
+    /* The stApp flex row - force main to fill */
+    .stApp > div[data-testid="stAppViewContainer"] {
+        flex-direction: row !important;
     }
 
     h1 { font-size: 1.3rem !important; }
 
-    /* Chat bubbles */
     div[style*="max-width:72%"] {
         max-width: 90% !important;
         font-size: 13px !important;
@@ -234,7 +232,6 @@ div[style*="linear-gradient"] {
         word-break: break-word !important;
     }
 
-    /* All buttons full width */
     .stButton > button {
         width: 100% !important;
         font-size: 14px !important;
@@ -242,13 +239,11 @@ div[style*="linear-gradient"] {
         min-height: 48px !important;
     }
 
-    /* Stat boxes stack vertically on mobile */
     div[style*="display:flex; gap:12px"] {
         flex-direction: column !important;
         gap: 8px !important;
     }
 
-    /* Prevent iOS zoom on input focus */
     .stTextInput > div > div > input {
         font-size: 16px !important;
     }
@@ -258,30 +253,23 @@ div[style*="linear-gradient"] {
     }
 }
 
-/* Small phones */
 @media (max-width: 480px) {
     .main .block-container {
         padding: 0.5rem 0.4rem !important;
     }
     h1 { font-size: 1.1rem !important; }
-
     span[style*="border-radius:20px"] {
         font-size: 10px !important;
         padding: 2px 8px !important;
     }
 }
 
-/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
     [data-testid="stSidebar"] .stButton > button:hover {
         transform: none !important;
     }
-    .stButton > button {
-        min-height: 48px !important;
-    }
-    select, input, textarea {
-        font-size: 16px !important;
-    }
+    .stButton > button { min-height: 48px !important; }
+    select, input, textarea { font-size: 16px !important; }
 }
 
 </style>
@@ -539,6 +527,37 @@ def show_login():
 # MAIN APP
 # ════════════════════════════════════════════════
 def show_app():
+
+    # ── Auto-collapse sidebar on mobile via JavaScript ──
+    st.markdown("""
+    <script>
+    (function() {
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                // Find the sidebar close button and click it
+                var btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
+                if (!btn) {
+                    btn = window.parent.document.querySelector('button[kind="header"]');
+                }
+                // Find sidebar element
+                var sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+                if (sidebar) {
+                    var expanded = sidebar.getAttribute('aria-expanded');
+                    if (expanded === 'true') {
+                        // Click the toggle button to collapse
+                        var toggleBtn = window.parent.document.querySelector('[data-testid="stSidebarNavToggleButton"], button[aria-label="Close sidebar"], button[aria-expanded="true"]');
+                        if (toggleBtn) toggleBtn.click();
+                    }
+                }
+            }
+        }
+        // Run on load
+        setTimeout(closeSidebarOnMobile, 300);
+        // Run on resize
+        window.addEventListener('resize', closeSidebarOnMobile);
+    })();
+    </script>
+    """, unsafe_allow_html=True)
 
     # ── Sidebar ──────────────────────────────────
     with st.sidebar:
